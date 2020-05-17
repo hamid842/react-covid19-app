@@ -1,7 +1,38 @@
-import React from "react";
+import React, { Component } from "react";
+import { Cards, Chart, CountryPicker } from "./components";
+import styles from "./app.module.css";
+import { fetchData } from "./api";
+import corona from "./images/corona.png";
 
-const App = () => {
-  return <div className="App">App</div>;
-};
+class App extends Component {
+  state = {
+    data: {},
+    country: "",
+  };
+
+  async componentDidMount() {
+    const fetchedData = await fetchData();
+    this.setState({ data: fetchedData });
+  }
+
+  handleCountryChange = async (country) => {
+    // Fetch data
+    const fetchedData = await fetchData(country);
+    // Set the state
+    this.setState({ data: fetchedData, country: country });
+  };
+
+  render() {
+    const { data, country } = this.state;
+    return (
+      <div className={styles.container}>
+        <img src={corona} alt="Corona" className={styles.image} />
+        <Cards data={data} />
+        <CountryPicker handleCountryChange={this.handleCountryChange} />
+        <Chart data={data} country={country} />
+      </div>
+    );
+  }
+}
 
 export default App;
